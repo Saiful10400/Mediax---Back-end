@@ -1,1 +1,1 @@
-#This is mediax project backend.
+# This is mediax website bakck-end.
