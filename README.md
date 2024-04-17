@@ -1,1 +1,1 @@
-# This is mediax website bakck-end.
+# This is mediax website back-end.
