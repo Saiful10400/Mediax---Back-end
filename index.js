@@ -20,13 +20,7 @@ const io = new Server(server, {
   },
 });
 
-// socket io handle.
-io.on("connection", (socket) => {
-  console.log("a user is connected.", socket.id);
-  socket.on("message", (res) => {
-    console.log(res);
-  });
-});
+
 
 const uri = `mongodb+srv://${process.env.MONGO_USER_NAME}:${process.env.MONGO_USER_PASSWORD}@cluster0.qe6izo7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
@@ -52,7 +46,7 @@ async function run() {
     // Database all collection.
     const doctorsCollection = database.collection("Doctors");
     const patientCollection = database.collection("Patients");
-    const chat=database.collection("Chats")
+    const chatCollection=database.collection("Chats")
 
 
 
@@ -170,9 +164,36 @@ async function run() {
     })
 
 
+ 
+
+// #socket io connection handle.
+let activeAccounts=[]
+io.on("connection", (socket) => {
+  
+
+  // #### socket connected and disconnected user manage.####
+
+  // add an account to active user array.(after connected)
+  socket.on("connection",data=>{
+    activeAccounts.push({...data,id:socket.id})
+    io.emit("activeDoctors",activeAccounts)
+  })
+
+  // delete an accoutn form active user array .(after disconnect.)
+  socket.on("disconnect",()=>{
+    // let's filter active users connected array.
+    activeAccounts=activeAccounts.filter(item=>item.id!==socket.id)
+    io.emit("activeDoctors",activeAccounts)
+  })
+
+  // lets send connected doctors array.
+
+  
 
 
-
+ 
+  
+});
 
 
 
