@@ -134,8 +134,23 @@ async function run() {
       const result=await doctorsCollection.findOne({_id:new ObjectId(id)})
       res.send(result)
     })
-    
- 
+    // 9. append a patient request to doctor object.
+
+    app.post("/doctor-app-reques", async(req,res)=>{
+      let {id,data}=req.body
+      const updateData={$push:{appReq:{...data,id:new ObjectId(),accept:false}}}
+      const result=await doctorsCollection.updateOne({email:id},updateData,{upsert:true})
+      res.send(result)
+    })
+    // 10. post doctor work experience to doctor object.
+
+    app.post("/add-doctor-work-experience",async(req,res)=>{
+      const{id,data}=req.body
+      const updateData={$push:{worked:{data}}}
+      let result=await doctorsCollection.updateOne({email:id},updateData,{upsert:true})
+      res.send(result)
+    })
+  
 
     // #Manage all patients
     
@@ -150,7 +165,7 @@ async function run() {
     // 2. get a patient with email.
     app.post("/get-a-patient-with-email",async function(req,res){
       const{email}=req.body
-      const result= await patientCollection.findOne({email})
+      const result= await patientCollection.findOne({"data.email":email})
       res.status(200).send(result)
     })
 
